@@ -11,8 +11,8 @@ class MangoGame:
     START_X, START_Y = 24, 24
     SPACING = 50
     BACKGROUND_COLOR = (0, 0, 0)
-    START_POS_X = 50
-    START_POS_Y = 50
+    START_POS_X = 70
+    START_POS_Y = 70
     PLAYER_SIZE = 15
 
     def __init__(self):
@@ -33,7 +33,7 @@ class MangoGame:
         self.mango = None
 
         player_speed = 5
-        self.player = Player(self.START_POS_X, self.START_POS_Y, self.PLAYER_SIZE, player_speed)
+        self.player = Player(self, self.START_POS_X, self.START_POS_Y, self.PLAYER_SIZE, player_speed)
 
         # Load the game level and available paths
         self.load_level(1)
@@ -74,39 +74,39 @@ class MangoGame:
                 line = file.readline()
                 row += 1
     
-    def handle_events(self):
+    # def handle_events(self):
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.player.direction = 2
-        elif keys[pygame.K_RIGHT]:
-            self.player.direction = 0
-        elif keys[pygame.K_UP]:
-            self.player.direction = 3
-        elif keys[pygame.K_DOWN]:
-            self.player.direction = 1
+    #     keys = pygame.key.get_pressed()
+    #     if keys[pygame.K_LEFT]:
+    #         self.player.direction = 2
+    #     elif keys[pygame.K_RIGHT]:
+    #         self.player.direction = 0
+    #     elif keys[pygame.K_UP]:
+    #         self.player.direction = 3
+    #     elif keys[pygame.K_DOWN]:
+    #         self.player.direction = 1
     
     def update(self):
         self.mango.update()
         self.player.update()
 
         # Collision detection with walls
-        player_rect = pygame.Rect(self.player.x - self.player.radius, self.player.y - self.player.radius,
-                                   2 * self.player.radius, 2 * self.player.radius)
-        for i, row in enumerate(self.txt_grid):
-            for j, cell in enumerate(row):
-                if cell == "#":
-                    wall_rect = pygame.Rect(j * 30, i * 30, 30, 30)
-                    if player_rect.colliderect(wall_rect):
-                        # Pacman hit a wall, stop moving
-                        if self.player.direction == 0:
-                            self.player.x -= self.player.speed
-                        elif self.player.direction == 1:
-                            self.player.y -= self.player.speed
-                        elif self.player.direction == 2:
-                            self.player.x += self.player.speed
-                        elif self.player.direction == 3:
-                            self.player.y += self.player.speed
+        # player_rect = pygame.Rect(self.player.x - self.player.radius, self.player.y - self.player.radius,
+        #                            2 * self.player.radius, 2 * self.player.radius)
+        # for i, row in enumerate(self.txt_grid):
+        #     for j, cell in enumerate(row):
+        #         if cell == "#":
+        #             wall_rect = pygame.Rect(j * 30, i * 30, 30, 30)
+        #             if player_rect.colliderect(wall_rect):
+        #                 # Pacman hit a wall, stop moving
+        #                 if self.player.direction == 0:
+        #                     self.player.x -= self.player.speed
+        #                 elif self.player.direction == 1:
+        #                     self.player.y -= self.player.speed
+        #                 elif self.player.direction == 2:
+        #                     self.player.x += self.player.speed
+        #                 elif self.player.direction == 3:
+        #                     self.player.y += self.player.speed
 
     def run(self):
         # Main game loop
@@ -157,5 +157,5 @@ class MangoGame:
         sys.exit()
 
 if __name__ == "__main__":
-    pm = MangoGame()
-    pm.run()
+    game = MangoGame()
+    game.run()

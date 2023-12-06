@@ -17,11 +17,11 @@ class Block(pygame.sprite.Sprite):
         if wall_type == self.WALL:
             self.image = pygame.image.load(filepath+"wall.png")
         elif wall_type == self.BRICK:
-            self.image = pygame.image.load(filepath+"brick.png")
+            self.image = pygame.image.load(filepath+"freezer.png")
         elif wall_type == self.MONEY:
-            self.image = pygame.image.load(filepath+"money.png")
+            self.image = pygame.image.load(filepath+"churro.png")
         elif wall_type == self.BOOSTER:
-            self.image = pygame.image.load(filepath+"booster.png")
+            self.image = pygame.image.load(filepath+"sample.png")
 
         self.type = wall_type
         

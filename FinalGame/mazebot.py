@@ -165,7 +165,7 @@ class MazeBot(pygame.sprite.Sprite):
 
         return next_char
             
-    def update(self):
+    def update(self, input=None):
         # TODO: Use the finite state machine to process input
         next_space = self.get_next_space()
     
