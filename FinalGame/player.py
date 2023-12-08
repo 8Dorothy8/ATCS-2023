@@ -9,15 +9,14 @@ class Player:
     #S_SOUTH, S_EAST, S_NORTH, S_WEST = "ss", "se", "sn", "sw"
     #F_SOUTH, F_EAST, F_NORTH, F_WEST = "fs", "fe", "fn", "fw"
 
-    def __init__(self, game, x, y, radius, speed):
+    def __init__(self, game, x, y, speed):
         self.x = x
         self.y = y
 
         # Load initial image
-        self.image = pygame.image.load("assets/images/bot.png")
+        self.image = pygame.image.load("assets/images/cart.png")
         self.rect = self.image.get_rect()
 
-        # self.radius = radius
         self.speed = speed
         self.direction = 0  # 0: right, 1: down, 2: left, 3: up
 
@@ -36,6 +35,13 @@ class Player:
         self.fsm.add_transition('#', self.N_EAST, None, None)
         self.fsm.add_transition('#', self.N_NORTH, None, None)
         self.fsm.add_transition('#', self.N_WEST, None, None)
+
+        # for space
+        self.fsm.add_transition(' ', self.N_SOUTH, self.move_south, self.N_SOUTH)
+        self.fsm.add_transition(' ', self.N_EAST, self.move_east, self.N_EAST)
+        self.fsm.add_transition(' ', self.N_NORTH, self.move_north, self.N_NORTH)
+        self.fsm.add_transition(' ', self.N_WEST, self.move_west, self.N_WEST)
+
         # self.fsm.add_transition('X', self.S_SOUTH, None, None)
         # self.fsm.add_transition('X', self.S_EAST, None, None)
         # self.fsm.add_transition('X', self.S_NORTH, None, None)
@@ -48,6 +54,34 @@ class Player:
     def get_state(self):
         # Return the player's current state
         return self.fsm.current_state
+    
+    def move_south(self):
+        """
+        Changes the bot's location 1 spot South
+        and records the movement in self.path
+        """
+        self.rect.centery += self.speed
+
+    def move_east(self):
+        """
+        Changes the bot's location 1 spot East
+        and records the movement in self.path
+        """
+        self.rect.centerx += self.speed
+
+    def move_north(self):
+        """
+        Changes the bot's location 1 spot North
+        and records the movement in self.path
+        """
+        self.rect.centery -= self.speed
+
+    def move_west(self):
+        """
+        Changes the bot's location 1 spot West
+        and records the movement in self.path
+        """
+        self.rect.centerx -= self.speed
 
     def move(self):
         # This is the current x and y indices of the bot in the maze
@@ -70,13 +104,15 @@ class Player:
         elif state == 3:
             next_y -= self.speed
          
-    
+        next_char = self.maze[next_y][next_x]
+
+        return next_char
+
     def update(self):
         # FSM with the next space
-        next_space = self.get_next_space()
+        next_space = self.move()
         self.fsm.process(next_space)
-
+        print(next_space)
+        
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x , self.rect.y ))
-
-# modified from mangogame code

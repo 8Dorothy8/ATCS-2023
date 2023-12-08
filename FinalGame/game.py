@@ -32,9 +32,6 @@ class MangoGame:
         self.blocks = pygame.sprite.Group()
         self.mango = None
 
-        player_speed = 5
-        self.player = Player(self, self.START_POS_X, self.START_POS_Y, self.PLAYER_SIZE, player_speed)
-
         # Load the game level and available paths
         self.load_level(1)
         print(self.txt_grid)
@@ -67,6 +64,11 @@ class MangoGame:
                         self.blocks.add(Block(pos_x, pos_y, Block.BOOSTER))
                     elif line[col] == 'S':
                         self.mango = MazeBot(self, pos_x, pos_y)
+                        txt_row[-1] = ' '
+                    elif line[col] == 'P':
+                        player_speed = 5
+                        self.player = Player(self, pos_x, pos_y, player_speed)
+                        txt_row[-1] = ' '
                     elif line[col] == '\n':
                         txt_row.pop()
 
