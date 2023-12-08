@@ -16,6 +16,8 @@ class Player:
         # Load initial image
         self.image = pygame.image.load("assets/images/cart.png")
         self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
         self.speed = speed
         self.direction = 0  # 0: right, 1: down, 2: left, 3: up
@@ -24,7 +26,7 @@ class Player:
         
         self.maze = self.game.txt_grid
 
-        self.fsm = FSM(self.N_SOUTH)
+        self.fsm = FSM(self.N_EAST)
         self.init_fsm()
     
     def init_fsm(self):
@@ -87,24 +89,32 @@ class Player:
         # This is the current x and y indices of the bot in the maze
         grid_x = self.rect.centerx // self.game.SPACING
         grid_y = self.rect.centery // self.game.SPACING
+        
 
         # TODO: Use the bot's current state to determine
         # what the next maze location value is
         
         state = self.get_state()
-        next_x = grid_x
-        next_y = grid_y
 
-        if state == 0:
-            next_x += self.speed
-        elif state == 1:
-            next_y += self.speed
-        elif state == 2:
-            next_x -= self.speed
-        elif state == 3:
-            next_y -= self.speed
+        if state == "0":          # N_SOUTH, N_EAST, N_NORTH, N_WEST  = "1", "0", "3", "2"
+            grid_x = self.rect.centerx // self.game.SPACING
+            grid_y = self.rect.centery // self.game.SPACING
+            grid_x += 1
+        elif state == "1":
+            grid_x = self.rect.bottomright[1] // self.game.SPACING
+            grid_y = self.rect.bottomright[0] // self.game.SPACING
+            grid_y += 1
+        elif state == "2":
+            grid_x = self.rect.topleft[1] // self.game.SPACING
+            grid_y = self.rect.topleft[0] // self.game.SPACING
+            grid_x -= 1
+        elif state == "3":
+            grid_x = self.rect.topleft[1] // self.game.SPACING
+            grid_y = self.rect.topleft[0] // self.game.SPACING
+            grid_y -= 1
          
-        next_char = self.maze[next_y][next_x]
+        print("Next grid: ", grid_y, grid_x) 
+        next_char = self.maze[grid_y][grid_x]
 
         return next_char
 
@@ -112,7 +122,7 @@ class Player:
         # FSM with the next space
         next_space = self.move()
         self.fsm.process(next_space)
-        print(next_space)
+        print(next_space, self.direction)
         
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x , self.rect.y ))

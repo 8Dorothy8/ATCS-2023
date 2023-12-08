@@ -58,16 +58,18 @@ class MangoGame:
                     txt_row.append(line[col])
                     if line[col] == '#':
                         self.blocks.add(Block(pos_x, pos_y))
-                    elif line[col] == '$':
-                        self.blocks.add(Block(pos_x, pos_y, Block.MONEY))
-                    elif line[col] == 'B':
-                        self.blocks.add(Block(pos_x, pos_y, Block.BOOSTER))
+                    elif line[col] == 'C':
+                        self.blocks.add(Block(pos_x, pos_y, Block.CHURRO))
                     elif line[col] == 'S':
+                        self.blocks.add(Block(pos_x, pos_y, Block.SAMPLE))
+                    elif line[col] == 'F':
+                        self.blocks.add(Block(pos_x, pos_y, Block.FREEZER))
+                    elif line[col] == 'M':
                         self.mango = MazeBot(self, pos_x, pos_y)
                         txt_row[-1] = ' '
                     elif line[col] == 'P':
                         player_speed = 5
-                        self.player = Player(self, pos_x, pos_y, player_speed)
+                        self.player = Player(self, pos_x-25, pos_y-20, player_speed)
                         txt_row[-1] = ' '
                     elif line[col] == '\n':
                         txt_row.pop()
@@ -119,6 +121,10 @@ class MangoGame:
         self.blocks.draw(self.screen)
         self.mango.draw(self.screen)
 
+        # Load the Costco icon image
+        costco_icon = pygame.image.load("assets/images/Costco.png")  # Replace with the actual path
+        costco_icon_rect = costco_icon.get_rect(center=(self.WIDTH // 2, 45))
+
         while running:
             # Set fps to 120
             self.dt += self.clock.tick(120)
@@ -150,6 +156,7 @@ class MangoGame:
                 self.blocks.draw(self.screen)
                 self.mango.draw(self.screen)
                 self.player.draw(self.screen)
+                self.screen.blit(costco_icon, costco_icon_rect)
 
             # Update the display
             pygame.display.flip()

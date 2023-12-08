@@ -4,9 +4,9 @@ import pygame
 
 class Block(pygame.sprite.Sprite):
     WALL = 0
-    BRICK = 1
-    MONEY = 2
-    BOOSTER = 3
+    FREEZER = 1
+    CHURRO = 2
+    SAMPLE = 3
 
     def __init__(self, x=50, y=50, wall_type=0):
         super().__init__()
@@ -16,11 +16,11 @@ class Block(pygame.sprite.Sprite):
         # Load the image
         if wall_type == self.WALL:
             self.image = pygame.image.load(filepath+"wall.png")
-        elif wall_type == self.BRICK:
+        elif wall_type == self.FREEZER:
             self.image = pygame.image.load(filepath+"freezer.png")
-        elif wall_type == self.MONEY:
+        elif wall_type == self.CHURRO:
             self.image = pygame.image.load(filepath+"churro.png")
-        elif wall_type == self.BOOSTER:
+        elif wall_type == self.SAMPLE:
             self.image = pygame.image.load(filepath+"sample.png")
 
         self.type = wall_type
