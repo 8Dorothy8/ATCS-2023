@@ -14,6 +14,7 @@ class MangoGame:
     START_POS_X = 70
     START_POS_Y = 70
     PLAYER_SIZE = 15
+    LEFT, RIGHT, UP, DOWN = 2, 0, 3, 1
 
     def __init__(self):
         self.DEBUG = True
@@ -68,7 +69,7 @@ class MangoGame:
                         self.mango = MazeBot(self, pos_x, pos_y)
                         txt_row[-1] = ' '
                     elif line[col] == 'P':
-                        player_speed = 5
+                        player_speed = 20
                         self.player = Player(self, pos_x-25, pos_y-20, player_speed)
                         txt_row[-1] = ' '
                     elif line[col] == '\n':
@@ -135,13 +136,13 @@ class MangoGame:
                     running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        self.player.direction = 2
+                        self.player.direction = self.LEFT
                     elif event.key == pygame.K_RIGHT:
-                        self.player.direction = 0
+                        self.player.direction = self.RIGHT
                     elif event.key == pygame.K_UP:
-                        self.player.direction = 3
+                        self.player.direction = self.UP
                     elif event.key == pygame.K_DOWN:
-                        self.player.direction = 1
+                        self.player.direction = self.DOWN
             
             # check for user key movement
             # self.update()
