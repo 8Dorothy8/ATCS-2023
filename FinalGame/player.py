@@ -86,6 +86,9 @@ class Player:
     def get_state(self):
         # Return the player's current state
         return self.fsm.current_state
+    
+    def stick_next(self, x):
+        return (x // self.game.SPACING) * self.game.SPACING + self.game.SPACING//2
 
     def move(self, in_speed):
         """
@@ -95,15 +98,19 @@ class Player:
         """
         if self.direction == self.game.LEFT:
             self.rect.centerx -= in_speed
+            self.rect.centery = self.stick_next(self.rect.centery)
         elif self.direction == self.game.RIGHT:
             self.rect.centerx += in_speed
+            self.rect.centery = self.stick_next(self.rect.centery)
         elif self.direction == self.game.UP:
             self.rect.centery -= in_speed
+            self.rect.centerx = self.stick_next(self.rect.centerx)
         elif self.direction == self.game.DOWN:
             self.rect.centery += in_speed
+            self.rect.centerx = self.stick_next(self.rect.centerx)
         else:
             print("unknown direction", self.direction)
-
+    
     def check_move(self):
         """
         Uses the player's current state to determine the next 
@@ -116,12 +123,16 @@ class Player:
         grid_y = self.rect.centery // self.game.SPACING
         
         if self.direction == self.game.RIGHT:
+            grid_x = self.rect.left // self.game.SPACING
             grid_x += 1
         elif self.direction == self.game.UP:
+            grid_y = self.rect.bottom // self.game.SPACING
             grid_y -= 1
         elif self.direction == self.game.LEFT:
+            grid_x = self.rect.right // self.game.SPACING
             grid_x -= 1
         elif self.direction == self.game.DOWN:
+            grid_y = self.rect.top // self.game.SPACING
             grid_y += 1
          
         next_char = self.maze[grid_y][grid_x]
