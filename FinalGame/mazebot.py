@@ -1,18 +1,27 @@
-# modified from mangogame code
+"""
+Code for the AI mazebot shopper which the player competes against.
+
+@author: Dorothy Zhang
+@version: 2023
+moderately modified from MangoGame code
+
+"""
 
 import pygame
 from fsm import FSM
 
 class MazeBot(pygame.sprite.Sprite):
     # States
-    N_SOUTH, N_EAST, N_NORTH, N_WEST, WIN, B_SOUTH, B_EAST, B_NORTH, B_WEST = "ns", "ne", "nn", "nw", "w", "bs", "be", "bn", "bw"
+    N_SOUTH, N_EAST, N_NORTH, N_WEST = "ns", "ne", "nn", "nw"
+    B_SOUTH, B_EAST, B_NORTH, B_WEST = "bs", "be", "bn", "bw"
+    WIN = "w"
 
     def __init__(self, game, x=50, y=50):
         super().__init__()
 
         self.game = game
 
-        # Load initial image
+        # Load initial bot image
         self.image = pygame.image.load("assets/images/bot.png")
         self.rect = self.image.get_rect()
 
@@ -27,91 +36,62 @@ class MazeBot(pygame.sprite.Sprite):
         # The map of the maze
         self.maze = self.game.txt_grid
 
-        # The route the bot will take to get to the $
+        # The route the bot will take to get to the churros
         self.path = []
 
-        # TODO: Create the Bot's finite state machine (self.fsm) with initial state
+        # Create bot's finite state machine with initial state
         self.fsm = FSM(self.N_SOUTH)
         self.init_fsm()
     
     def init_fsm(self):
-        # TODO: Add the state transitions
-        
-        # for obstacles
-        self.fsm.add_transition('X', self.N_SOUTH, None, self.N_EAST)
-        self.fsm.add_transition('X', self.N_EAST, None, self.N_NORTH)
-        self.fsm.add_transition('X', self.N_NORTH, None, self.N_WEST)
-        self.fsm.add_transition('X', self.N_WEST, None, self.N_SOUTH)
-        self.fsm.add_transition('X', self.B_SOUTH, self.move_south, self.B_SOUTH)
-        self.fsm.add_transition('X', self.B_EAST, self.move_east, self.B_EAST)
-        self.fsm.add_transition('X', self.B_NORTH, self.move_north, self.B_NORTH)
-        self.fsm.add_transition('X', self.B_WEST, self.move_west, self.B_WEST)
-        
+        """
+        Set up all the state transitions for mazebot.
+        Transitions consider the direction of movement (sourth, east, north, west),
+        and the character/obstacles ('#' wall, ' ' open space, 'C' winning churro) encountered
+       
+        """
+
         # for wall
         self.fsm.add_transition('#', self.N_SOUTH, None , self.N_EAST)
         self.fsm.add_transition('#', self.N_EAST, None, self.N_NORTH)
         self.fsm.add_transition('#', self.N_NORTH, None, self.N_WEST)
         self.fsm.add_transition('#', self.N_WEST, None, self.N_SOUTH)
-        self.fsm.add_transition('#', self.B_SOUTH, None, self.B_EAST)
-        self.fsm.add_transition('#', self.B_EAST, None, self.B_NORTH)
-        self.fsm.add_transition('#', self.B_NORTH, None, self.B_WEST)
-        self.fsm.add_transition('#', self.B_WEST, None, self.B_SOUTH)
-
-        # for breaker
-        for symbol in ['$', 'B']:
-            self.fsm.add_transition(symbol, self.N_SOUTH, self.move_south, self.B_SOUTH)
-            self.fsm.add_transition(symbol, self.N_EAST, self.move_east, self.B_EAST)
-            self.fsm.add_transition(symbol, self.N_NORTH, self.move_north, self.B_NORTH)
-            self.fsm.add_transition(symbol, self.N_WEST, self.move_west, self.B_WEST)
-            self.fsm.add_transition(symbol, self.B_SOUTH, self.move_south, self.N_SOUTH)
-            self.fsm.add_transition(symbol, self.B_EAST, self.move_east, self.N_EAST)
-            self.fsm.add_transition(symbol, self.B_NORTH, self.move_north, self.N_NORTH)
-            self.fsm.add_transition(symbol, self.B_WEST, self.move_west, self.N_WEST)
 
         # for open space
-        for symbol in [' ', 'M']:
-            self.fsm.add_transition(symbol, self.N_SOUTH, self.move_south, self.N_SOUTH)
-            self.fsm.add_transition(symbol, self.N_EAST, self.move_east, self.N_EAST)
-            self.fsm.add_transition(symbol, self.N_NORTH, self.move_north, self.N_NORTH)
-            self.fsm.add_transition(symbol, self.N_WEST, self.move_west, self.N_WEST)
-            self.fsm.add_transition(symbol, self.B_SOUTH, self.move_south, self.B_SOUTH)
-            self.fsm.add_transition(symbol, self.B_EAST, self.move_east, self.B_EAST)
-            self.fsm.add_transition(symbol, self.B_NORTH, self.move_north, self.B_NORTH)
-            self.fsm.add_transition(symbol, self.B_WEST, self.move_west, self.B_WEST)
+        self.fsm.add_transition(' ', self.N_SOUTH, self.move_south, self.N_SOUTH)
+        self.fsm.add_transition(' ', self.N_EAST, self.move_east, self.N_EAST)
+        self.fsm.add_transition(' ', self.N_NORTH, self.move_north, self.N_NORTH)
+        self.fsm.add_transition(' ', self.N_WEST, self.move_west, self.N_WEST)
+        self.fsm.add_transition(' ', self.WIN, None, None)
+
+        # for win
+        self.fsm.add_transition('C', self.N_SOUTH, self.move_south, self.WIN)
+        self.fsm.add_transition('C', self.N_EAST, self.move_east, self.WIN)
+        self.fsm.add_transition('C', self.N_NORTH, self.move_north, self.WIN)
+        self.fsm.add_transition('C', self.N_WEST, self.move_west, self.WIN)
+        self.fsm.add_transition('C', self.WIN, None, self.WIN)
 
     def get_state(self):
-        # TODO: Return the maze bot's current state
+        # returns bot's current state
         return self.fsm.current_state
     
     def move_south(self):
-        """
-        Changes the bot's location 1 spot South
-        and records the movement in self.path
-        """
+       # Changes the bot's location 1 velocity south
         self.rect.centery += self.velocity
         self.path.append("SOUTH")
 
     def move_east(self):
-        """
-        Changes the bot's location 1 spot East
-        and records the movement in self.path
-        """
+        # Changes the bot's location 1 velocity east
         self.rect.centerx += self.velocity
         self.path.append("EAST")
 
     def move_north(self):
-        """
-        Changes the bot's location 1 spot North
-        and records the movement in self.path
-        """
+        # Changes the bot's location 1 velocity north
         self.rect.centery -= self.velocity
         self.path.append("NORTH")
 
     def move_west(self):
-        """
-        Changes the bot's location 1 spot West
-        and records the movement in self.path
-        """
+        # Changes the bot's location 1 velocity west
         self.rect.centerx -= self.velocity
         self.path.append("WEST")
     
@@ -121,19 +101,13 @@ class MazeBot(pygame.sprite.Sprite):
         space in the maze the bot would go to. The next 
         space is returned as a String from self.maze.
 
-        Ex. If the bot is facing South, you should get 
-        the character one row down from you.
-
-        Returns:
-            String: The next character in the maze the bot could go to
         """
 
-        # This is the current x and y indices of the bot in the maze
+        # Current x and y indices of the bot
         grid_x = self.rect.centerx // self.game.SPACING
         grid_y = self.rect.centery // self.game.SPACING
 
-        # TODO: Use the bot's current state to determine
-        # what the next maze location value is
+        # Determine what the next maze location value is
         
         state = self.get_state()
         next_x = grid_x
@@ -148,7 +122,8 @@ class MazeBot(pygame.sprite.Sprite):
         elif state == "nw":
             next_x -= 1
         elif state == "w":
-            print("already won") 
+            #print("already won")
+            pass 
         elif state == "bs":
             next_y += 1
         elif state == "be":
@@ -158,23 +133,23 @@ class MazeBot(pygame.sprite.Sprite):
         elif state == "bw":
             next_x -= 1
         
-        #print(next_x, next_y)
-        #print(state)
-        
         next_char = self.maze[next_y][next_x]
-
         return next_char
             
     def update(self, input=None):
-        # TODO: Use the finite state machine to process input
-        next_space = self.get_next_space()
-    
-        self.fsm.process(next_space)
+        # Use the finite state machine to process input
 
-        if next_space == '$':
-            print("win")
-            print(self.path)
-            exit(0)
+        next_space = self.get_next_space()
+        self.fsm.process(next_space)
     
     def draw(self, screen):
+        # draw the mazebot onto the maze and win message
+
+        if self.get_state() == self.WIN:
+            font = pygame.font.Font(None, 100)
+            text = font.render("YOU LOSE!", True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_rect.center = (self.game.WIDTH // 2, self.game.HEIGHT // 2)
+            screen.blit(text, text_rect)
+
         screen.blit(self.image, (self.rect.x , self.rect.y ))

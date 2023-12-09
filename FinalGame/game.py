@@ -1,4 +1,19 @@
-# modified from mangogame code
+"""
+Welcome to the Costco Craze game!
+
+
+You are a shopper going through the aisles at Costco.
+Your goal to win the game is to reach the churro stand before the AI shopper does.
+If you encounter a sample, you get a speed boost.
+If you encounter the freezer section, you slow down.
+
+Good Luck.
+
+@author: Dorothy Zhang
+@version: 2023
+moderately from MangoGame code
+
+"""
 
 import pygame
 import sys
@@ -32,20 +47,24 @@ class MangoGame:
         # sprites
         self.blocks = pygame.sprite.Group()
         self.mango = None
+        self.player = None
 
-        # Load the game level and available paths
+        # maze
         self.load_level(1)
-        print(self.txt_grid)
-        #print(self.txt_grid[3][4])
-
         self.HEIGHT = len(self.txt_grid) * self.SPACING
         self.WIDTH = len(self.txt_grid[0]) * self.SPACING
 
         # Create the game window
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Costco Craze")
+        
 
     def load_level(self, maze_number=1):
+        """
+        Reads the selected maze file and loads the icon corresponding to the characters, 
+        appends to text_grid for future use
+        
+        """
         filepath = "assets/mazes/maze" + str(maze_number) + ".txt"
         row = 0
         with open(filepath, "r") as file:
@@ -69,7 +88,7 @@ class MangoGame:
                         self.mango = MazeBot(self, pos_x, pos_y)
                         txt_row[-1] = ' '
                     elif line[col] == 'P':
-                        player_speed = 20
+                        player_speed = 10
                         self.player = Player(self, pos_x-25, pos_y-20, player_speed)
                         txt_row[-1] = ' '
                     elif line[col] == '\n':
@@ -79,39 +98,12 @@ class MangoGame:
                 line = file.readline()
                 row += 1
     
-    # def handle_events(self):
-
-    #     keys = pygame.key.get_pressed()
-    #     if keys[pygame.K_LEFT]:
-    #         self.player.direction = 2
-    #     elif keys[pygame.K_RIGHT]:
-    #         self.player.direction = 0
-    #     elif keys[pygame.K_UP]:
-    #         self.player.direction = 3
-    #     elif keys[pygame.K_DOWN]:
-    #         self.player.direction = 1
-    
     def update(self):
+        """
+        calls the update functions for mango and player
+        """
         self.mango.update()
         self.player.update()
-
-        # Collision detection with walls
-        # player_rect = pygame.Rect(self.player.x - self.player.radius, self.player.y - self.player.radius,
-        #                            2 * self.player.radius, 2 * self.player.radius)
-        # for i, row in enumerate(self.txt_grid):
-        #     for j, cell in enumerate(row):
-        #         if cell == "#":
-        #             wall_rect = pygame.Rect(j * 30, i * 30, 30, 30)
-        #             if player_rect.colliderect(wall_rect):
-        #                 # Pacman hit a wall, stop moving
-        #                 if self.player.direction == 0:
-        #                     self.player.x -= self.player.speed
-        #                 elif self.player.direction == 1:
-        #                     self.player.y -= self.player.speed
-        #                 elif self.player.direction == 2:
-        #                     self.player.x += self.player.speed
-        #                 elif self.player.direction == 3:
-        #                     self.player.y += self.player.speed
 
     def run(self):
         # Main game loop
@@ -123,7 +115,7 @@ class MangoGame:
         self.mango.draw(self.screen)
 
         # Load the Costco icon image
-        costco_icon = pygame.image.load("assets/images/Costco.png")  # Replace with the actual path
+        costco_icon = pygame.image.load("assets/images/Costco.png")
         costco_icon_rect = costco_icon.get_rect(center=(self.WIDTH // 2, 45))
 
         while running:
@@ -134,6 +126,8 @@ class MangoGame:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                
+                # check for user key movement
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         self.player.direction = self.LEFT
@@ -144,9 +138,6 @@ class MangoGame:
                     elif event.key == pygame.K_DOWN:
                         self.player.direction = self.DOWN
             
-            # check for user key movement
-            # self.update()
-
             # Only update every 120 fps
             if self.dt > 120:
                 self.dt = 0

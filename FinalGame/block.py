@@ -1,5 +1,11 @@
-# modified from mangogame code
+"""
+Code for blocks (wall, churro, freezer, and sample) printed into the maze
 
+@author: Dorothy Zhang
+@version: 2023
+modified from MangoGame code
+
+"""
 import pygame
 
 class Block(pygame.sprite.Sprite):
