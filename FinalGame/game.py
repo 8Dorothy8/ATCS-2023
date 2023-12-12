@@ -107,6 +107,7 @@ class MangoGame:
 
     def run(self):
         # Main game loop
+        self.show_start_screen()
         running = True
 
         # Draw the initial screen
@@ -156,6 +157,80 @@ class MangoGame:
         # Quit Pygame
         pygame.quit()
         sys.exit()
+
+    def show_start_screen(self):
+        """
+        Draws the start screen that introduces the game
+        From chatCPT
+        """
+        # Define the maximum width and height for the text
+        max_width = self.WIDTH - 20
+        max_height = self.HEIGHT - 20
+
+        # Initialize font with a large size
+        font_size = 36
+        line_spacing = 5
+        start_font = pygame.font.Font(None, font_size)
+
+        # Define the instructions text
+        instructions = (
+            "You are a shopper going through the aisles at Costco.\n"
+            "If you encounter a sample, you get a speed boost.\n"
+            "If you encounter the freezer section, you slow down.\n"
+            "Your goal to win the game is to reach the churro stand before the AI shopper does.\n"
+            "Good Luck.\n"
+            "Press space to continue"
+        )
+
+        # Render text with the current font size and line spacing
+        start_text = self.render_multiline_text(instructions, start_font, line_spacing)
+
+        # Calculate text size and position
+        text_width, text_height = start_text.get_size()
+        start_rect = start_text.get_rect(center=(self.WIDTH // 2, self.HEIGHT // 2))
+
+        # Adjust font size and line spacing to fit within the window
+        while text_width > max_width or text_height > max_height:
+            font_size -= 2
+            line_spacing -= 1
+            start_font = pygame.font.Font(None, font_size)
+            start_text = self.render_multiline_text(instructions, start_font, line_spacing)
+            text_width, text_height = start_text.get_size()
+            start_rect = start_text.get_rect(center=(self.WIDTH // 2, self.HEIGHT // 2))
+
+        # Clear the screen
+        self.screen.fill(self.BACKGROUND_COLOR)
+
+        # Display the text on the screen
+        self.screen.blit(start_text, start_rect)
+
+        # Update the display
+        pygame.display.flip()
+
+        # Wait for any key press to start the game
+        waiting_for_key = True
+        while waiting_for_key:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    waiting_for_key = False
+
+    def render_multiline_text(self, text, font, line_spacing):
+        lines = text.split('\n')
+        rendered_lines = []
+
+        for line in lines:
+            rendered_lines.append(font.render(line, True, (255, 255, 255)))
+
+        total_height = sum([line.get_height() for line in rendered_lines])
+        rendered_text = pygame.Surface((max(line.get_width() for line in rendered_lines), total_height), pygame.SRCALPHA)
+
+        y = 0
+        for line in rendered_lines:
+            rendered_text.blit(line, (0, y))
+            y += line.get_height() + line_spacing
+
+        return rendered_text
+        
 
 if __name__ == "__main__":
     game = MangoGame()

@@ -159,7 +159,9 @@ class Player:
 
         if self.get_state() == self.WIN:
             font = pygame.font.Font(None, 100)
-            text = font.render("YOU WIN!", True, (255, 255, 255))
+            lines = ("YOU WIN!\n"
+                    "press space to play again")
+            text = font.render(lines, True, (255, 255, 255))
             text_rect = text.get_rect()
             text_rect.center = (self.game.WIDTH // 2, self.game.HEIGHT // 2)
             screen.blit(text, text_rect)

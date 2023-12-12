@@ -28,10 +28,10 @@ class MazeBot(pygame.sprite.Sprite):
         # Set rectangle
         self.width = self.image.get_width()
         self.height = self.image.get_height()
-        self.rect.centerx = x
-        self.rect.centery = y
+        self.rect.x = x
+        self.rect.y = y
 
-        self.velocity = 5
+        self.velocity = 10
 
         # The map of the maze
         self.maze = self.game.txt_grid
@@ -77,22 +77,22 @@ class MazeBot(pygame.sprite.Sprite):
     
     def move_south(self):
        # Changes the bot's location 1 velocity south
-        self.rect.centery += self.velocity
+        self.rect.y += self.velocity
         self.path.append("SOUTH")
 
     def move_east(self):
         # Changes the bot's location 1 velocity east
-        self.rect.centerx += self.velocity
+        self.rect.x += self.velocity
         self.path.append("EAST")
 
     def move_north(self):
         # Changes the bot's location 1 velocity north
-        self.rect.centery -= self.velocity
+        self.rect.y -= self.velocity
         self.path.append("NORTH")
 
     def move_west(self):
         # Changes the bot's location 1 velocity west
-        self.rect.centerx -= self.velocity
+        self.rect.x -= self.velocity
         self.path.append("WEST")
     
     def get_next_space(self):
@@ -147,9 +147,12 @@ class MazeBot(pygame.sprite.Sprite):
 
         if self.get_state() == self.WIN:
             font = pygame.font.Font(None, 100)
-            text = font.render("YOU LOSE!", True, (255, 255, 255))
+            lines = ("YOU LOSE!\n"
+                    "press space to play again")
+            text = font.render(lines, True, (255, 255, 255))
             text_rect = text.get_rect()
             text_rect.center = (self.game.WIDTH // 2, self.game.HEIGHT // 2)
             screen.blit(text, text_rect)
+            self.game.running
 
         screen.blit(self.image, (self.rect.x , self.rect.y ))
