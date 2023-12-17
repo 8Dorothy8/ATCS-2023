@@ -21,7 +21,7 @@ from block import Block
 from mazebot import MazeBot
 from player import Player
 
-class MangoGame:
+class CostcoGame:
     # Constants
     START_X, START_Y = 24, 24
     SPACING = 50
@@ -39,6 +39,7 @@ class MangoGame:
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.ghost_timer = 8000
+        self.running = True
 
         # Paths
         self.txt_grid = []
@@ -46,7 +47,7 @@ class MangoGame:
 
         # sprites
         self.blocks = pygame.sprite.Group()
-        self.mango = None
+        self.bot = None
         self.player = None
 
         # maze
@@ -85,7 +86,7 @@ class MangoGame:
                     elif line[col] == 'F':
                         self.blocks.add(Block(pos_x, pos_y, Block.FREEZER))
                     elif line[col] == 'M':
-                        self.mango = MazeBot(self, pos_x, pos_y)
+                        self.bot = MazeBot(self, pos_x, pos_y)
                         txt_row[-1] = ' '
                     elif line[col] == 'P':
                         player_speed = 10
@@ -100,33 +101,37 @@ class MangoGame:
     
     def update(self):
         """
-        calls the update functions for mango and player
+        calls the update functions for bot and player.
+        based on the state of bot and player, one or the other is set to lose state
         """
-        self.mango.update()
-        self.player.update()
+        
+        if self.player.update() == self.player.WIN:
+            self.bot.set_lose()
+
+        if self.bot.update() == self.bot.WIN:
+            self.player.set_lose()
 
     def run(self):
         # Main game loop
         self.show_start_screen()
-        running = True
 
         # Draw the initial screen
         self.screen.fill(self.BACKGROUND_COLOR)
         self.blocks.draw(self.screen)
-        self.mango.draw(self.screen)
+        self.bot.draw(self.screen)
 
         # Load the Costco icon image
         costco_icon = pygame.image.load("assets/images/Costco.png")
         costco_icon_rect = costco_icon.get_rect(center=(self.WIDTH // 2, 45))
 
-        while running:
+        while self.running:
             # Set fps to 120
             self.dt += self.clock.tick(120)
 
             # Handle closing the window
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                 
                 # check for user key movement
                 elif event.type == pygame.KEYDOWN:
@@ -147,7 +152,7 @@ class MangoGame:
                 # Draw to the screen
                 self.screen.fill(self.BACKGROUND_COLOR)
                 self.blocks.draw(self.screen)
-                self.mango.draw(self.screen)
+                self.bot.draw(self.screen)
                 self.player.draw(self.screen)
                 self.screen.blit(costco_icon, costco_icon_rect)
 
@@ -233,5 +238,5 @@ class MangoGame:
         
 
 if __name__ == "__main__":
-    game = MangoGame()
+    game = CostcoGame()
     game.run()

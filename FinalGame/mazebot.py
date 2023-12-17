@@ -13,8 +13,7 @@ from fsm import FSM
 class MazeBot(pygame.sprite.Sprite):
     # States
     N_SOUTH, N_EAST, N_NORTH, N_WEST = "ns", "ne", "nn", "nw"
-    B_SOUTH, B_EAST, B_NORTH, B_WEST = "bs", "be", "bn", "bw"
-    WIN = "w"
+    WIN, LOSE = "w", "l"
 
     def __init__(self, game, x=50, y=50):
         super().__init__()
@@ -62,7 +61,7 @@ class MazeBot(pygame.sprite.Sprite):
         self.fsm.add_transition(' ', self.N_EAST, self.move_east, self.N_EAST)
         self.fsm.add_transition(' ', self.N_NORTH, self.move_north, self.N_NORTH)
         self.fsm.add_transition(' ', self.N_WEST, self.move_west, self.N_WEST)
-        self.fsm.add_transition(' ', self.WIN, None, None)
+        self.fsm.add_transition(' ', self.WIN, None, self.WIN)
 
         # for win
         self.fsm.add_transition('C', self.N_SOUTH, self.move_south, self.WIN)
@@ -70,6 +69,16 @@ class MazeBot(pygame.sprite.Sprite):
         self.fsm.add_transition('C', self.N_NORTH, self.move_north, self.WIN)
         self.fsm.add_transition('C', self.N_WEST, self.move_west, self.WIN)
         self.fsm.add_transition('C', self.WIN, None, self.WIN)
+
+        # for lose
+        self.fsm.add_transition('L', self.N_SOUTH, None, self.LOSE)
+        self.fsm.add_transition('L', self.N_EAST, None, self.LOSE)
+        self.fsm.add_transition('L', self.N_NORTH, None, self.LOSE)
+        self.fsm.add_transition('L', self.N_WEST, None, self.LOSE)
+        self.fsm.add_transition('#', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition(' ', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition('C', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition('L', self.LOSE, None, self.LOSE)
 
     def get_state(self):
         # returns bot's current state
@@ -122,7 +131,6 @@ class MazeBot(pygame.sprite.Sprite):
         elif state == "nw":
             next_x -= 1
         elif state == "w":
-            #print("already won")
             pass 
         elif state == "bs":
             next_y += 1
@@ -135,24 +143,27 @@ class MazeBot(pygame.sprite.Sprite):
         
         next_char = self.maze[next_y][next_x]
         return next_char
-            
+    
+    def set_lose(self):
+        # sets the current state to lose
+        self.fsm.process('L')
+
     def update(self, input=None):
-        # Use the finite state machine to process input
+        # Use the finite state machine to process input and return the state
 
         next_space = self.get_next_space()
         self.fsm.process(next_space)
+        return self.get_state()
     
     def draw(self, screen):
         # draw the mazebot onto the maze and win message
 
         if self.get_state() == self.WIN:
             font = pygame.font.Font(None, 100)
-            lines = ("YOU LOSE!\n"
-                    "press space to play again")
+            lines = ("YOU LOSE!")
             text = font.render(lines, True, (255, 255, 255))
             text_rect = text.get_rect()
             text_rect.center = (self.game.WIDTH // 2, self.game.HEIGHT // 2)
             screen.blit(text, text_rect)
-            self.game.running
 
         screen.blit(self.image, (self.rect.x , self.rect.y ))

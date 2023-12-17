@@ -18,7 +18,7 @@ from fsm import FSM
 class Player:
 
     IDLE, MOVE = "i", "m"
-    WIN, SAMPLE, FREEZE = "w", "s", "f"
+    WIN, LOSE, SAMPLE, FREEZE = "w", "l", "s", "f"
 
     def __init__(self, game, x, y, speed):
         self.x = x
@@ -82,6 +82,23 @@ class Player:
         self.fsm.add_transition('F', self.WIN, self.slow, self.FREEZE)
         self.fsm.add_transition('F', self.SAMPLE, self.slow, self.FREEZE)
         self.fsm.add_transition('F', self.FREEZE, self.slow, self.FREEZE)
+
+        # for lose
+        self.fsm.add_transition('L', self.MOVE, None, self.LOSE)
+        self.fsm.add_transition('L', self.IDLE, None, self.LOSE)
+        self.fsm.add_transition('L', self.SAMPLE, None, self.LOSE)
+        self.fsm.add_transition('L', self.FREEZE, None, self.LOSE)
+        self.fsm.add_transition('#', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition(' ', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition('C', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition('S', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition('F', self.LOSE, None, self.LOSE)
+        self.fsm.add_transition('L', self.LOSE, None, self.LOSE)
+
+
+    def set_lose(self):
+        #sets the current state to lose
+        self.fsm.process('L')
 
     def get_state(self):
         # Return the player's current state
@@ -149,18 +166,18 @@ class Player:
         self.move(self.speed/2)
 
     def update(self):
-        # Use the finite state machine to process input
+        # Use the finite state machine to process input and return the state
         
         next_space = self.check_move()
         self.fsm.process(next_space)
+        return self.get_state()
         
     def draw(self, screen):
         # draw the player onto the maze and win message
 
         if self.get_state() == self.WIN:
             font = pygame.font.Font(None, 100)
-            lines = ("YOU WIN!\n"
-                    "press space to play again")
+            lines = ("YOU WIN!")
             text = font.render(lines, True, (255, 255, 255))
             text_rect = text.get_rect()
             text_rect.center = (self.game.WIDTH // 2, self.game.HEIGHT // 2)
